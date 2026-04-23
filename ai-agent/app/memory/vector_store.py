@@ -2,6 +2,7 @@
 
 import faiss
 import numpy as np
+import self
 from app.memory.embeddings import get_embedding
 
 class VectorStore:
@@ -10,13 +11,12 @@ class VectorStore:
         self.index = faiss.IndexFlatL2(self.dimension)
         self.texts = []  # stores original text
 
-    def add(self, text: str):
-        """
-        Add text to FAISS index
-        """
-        embedding = get_embedding(text)
-        self.index.add(np.array([embedding]).astype("float32"))
+    def add(self, text: str, source: str = ""):
+        emb = get_embedding(text)
+
+        self.index.add(np.array([emb]).astype("float32"))
         self.texts.append(text)
+        self.metadata.append(source)
 
     def search(self, query: str, k=3):
         """
@@ -33,3 +33,6 @@ class VectorStore:
 
 # Global instance (simple approach)
 vector_store = VectorStore()
+# ADD this: metadata storage
+
+self.metadata = []  # store source info
